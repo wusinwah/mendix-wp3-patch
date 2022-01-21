@@ -16,7 +16,8 @@ function command(cmd:string,dir:string, ...args:string[]){
         p.on("error",()=>{
             rejects()
         })
-        p.on("exit",()=>{
+        p.on("exit",(code)=>{
+            if(code!=0)return rejects();
             res();
         })
     });
