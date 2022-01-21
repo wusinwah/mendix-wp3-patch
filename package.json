@@ -1,0 +1,24 @@
+{
+  "name": "mendix-wp3-patch",
+  "version": "1.0.0",
+  "main": "patch.js",
+  "scripts": {
+    "preinstall":"tsc ",
+    "postinstall": "echo require('mendix-wp3-patch') > batch.js"
+  },
+  "author": "A*STAR SIMTEC/ARTC",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^17.0.8"
+  },
+  "config": {
+    "token": "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"
+  },
+  "devDependencies": {},
+  "keywords": [
+    "mendix",
+    "wp3",
+    "patch"
+  ],
+  "description": ""
+}
