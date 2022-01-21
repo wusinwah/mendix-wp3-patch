@@ -129,7 +129,7 @@ function updateGradle(){
 function start(_root:string, clone:string){
     const current = process.cwd();
     const d = new Date();
-    const root=path.join(_root,`source-${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`);
+    const root=path.resolve(path.join(_root,`source-${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`));
 
     let cmd:(()=>Promise<void>)[] = [
         ()=>new Promise<void>(res=>fs.rmdir(root,{recursive:true},()=>res())),
