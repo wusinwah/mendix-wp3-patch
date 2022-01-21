@@ -180,7 +180,7 @@ function start(_root:string, clone:string){
     });
 }
 const props = process.argv.reduce((p:string,c)=>{
-    if(c.startsWith("-i="))p=path.resolve(c);
+    if(c.startsWith("-i="))p=path.resolve(c.substring(3));
     return p;
 },path.join(__dirname,"config.properties"))
 
