@@ -1,6 +1,6 @@
 {
   "name": "mendix-wp3-patch",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "main": "js/patch.js",
   "scripts": {
     "preinstall": "tsc "
@@ -20,5 +20,5 @@
     "wp3",
     "patch"
   ],
-  "description": ""
+  "description": "mendix patch for background location tracking implementation"
 }
