@@ -13,7 +13,7 @@ type PROPERTY_KEY = typeof PROPERTY_KEYS[number];
 type PROPERTY_SET = {[key in PROPERTY_KEY]?:number|string|string[]}
 
 interface CONFIG extends PROPERTY_SET  {
-    git:string,message?:string,cwd:string, modules?:string[]
+    git:string,bg_loc?:string,bg_task?:string,cwd:string, modules?:string[]
 }
 
 const modules = {
@@ -59,7 +59,7 @@ function start(config:CONFIG){
         ()=>new Promise<void>(res=>fs.rename("native-template","nativeTemplate",()=>{res()})),
         ()=>command("pod",path.join(root,"ios"),"install"),
         ()=>chdir(path.join(root)),
-        ()=>patch(config.message)
+        ()=>patch(config.bg_loc, config.bg_task)
     ]
     let remain = [
         ()=>chdir(path.join(root)),
