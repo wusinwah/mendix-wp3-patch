@@ -40,6 +40,16 @@ function info_plist(current:string, bg_loc:string, bg_task:string){
         const xml = path.join(current,"ios","nativeTemplate","Info.plist");
         fs.readFile(xml,{encoding:"utf-8"},(err, data)=>{
             let json = parse(data) as {[key:string]:any}
+            /*<string>fetch</string>
+            <string>location</string>
+            <string>processing</string>*/
+            //json["UIBackgroundModes"]
+            var arr = json["UIBackgroundModes"]||[];
+            
+            json["UIBackgroundModes"] = ["fetch","location","processing"].reduce((p:string[],c:string)=>{
+                if(p.indexOf(c)<0)p.push(c);
+                return p;
+            },json["UIBackgroundModes"]||[] as string[])
             json["BGTaskSchedulerPermittedIdentifiers"] = json["BGTaskSchedulerPermittedIdentifiers"]||bg_task
             json["NSUserTrackingUsageDescription"]=json["NSUserTrackingUsageDescription"]||bg_loc;
             fs.writeFile(xml,build(json),()=>{
