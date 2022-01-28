@@ -62,8 +62,8 @@ function start(config:CONFIG){
                     res();
                 });
             }),
-            ()=>chdir(current),
-            config.image?()=>imagePatch(config.image||"", root ):()=>Promise.resolve(),
+            ()=>chdir(root),
+            config.image?()=>imagePatch(config.image||"",root):()=>Promise.resolve(),
             ()=>chdir(root),
             ...Object.entries(modules).map(mod=>{
                 return ()=>command(WinCommand("npm"),".","install","--save",mod[1]===null?mod[0]: `${mod[0]}@${mod[1]}`)
