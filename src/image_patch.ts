@@ -138,6 +138,7 @@ export default function(iconDir:string){
                 }),
             ]
             return Promise.all(arr).finally(()=>{
+                console.log("==============\n",process.cwd())
                 sequence(
                     ()=>setAndroid("icon"),()=>setAndroid("splash"),
                     ()=>setIOS("icon"),()=>setIOS("splash")
