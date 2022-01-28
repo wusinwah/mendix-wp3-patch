@@ -49,7 +49,7 @@ function start(config:CONFIG){
             ()=>command("git",".","clone",clone,root),
             ()=>chdir(path.join(root)),
             ()=>new Promise<void>(res=>{
-                fs.readFile(path.join(root, "./config.json"),{encoding:"utf-8"},(err, data2)=>{
+                fs.readFile(path.join(root, "config.json"),{encoding:"utf-8"},(err, data2)=>{
                     if(err){
                         console.error("no config",err);process.exit(1);
                     }
