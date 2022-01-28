@@ -1,11 +1,12 @@
-import fs from "fs"
+import fs, { fstat } from "fs"
 import path from "path"
 import process from "process";
-
+import os from "os"
 import {chdir, command, sequence,WinCommand} from "./utility"
 import updateGradle from "./android_file_patch"
 import patch from "./ios_file_patch";
 import imagePatch from "./image_patch"
+import { spawn } from "child_process";
 //const clone = "https://wusinwah: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@github.com/wusinwah/wp3.a.git"
 
 const PROPERTY_KEYS = ["cwd","bg_loc","bg_task","git","image"] as const
@@ -90,46 +91,87 @@ function start(config:CONFIG){
         })
     });
 }
-const props = process.argv.reduce((p:string,c,i )=>{
-    if(i==2)p=path.resolve(c);
-    return p;
-},path.join(__dirname,"config.properties"))
 
-fs.readFile(props,{ encoding:"utf-8"}, (Err, data)=>{
-    if(Err){ console.log("no config file");return;}
-    
-    
-    if(Err)return console.error("unable to read configuration file");
-    const line = data.split("\n").map(e=>e.trim()).filter(c=>c.length);
-    const cmd  = line.reduce((p:CONFIG,c)=>{
-        const index = c.indexOf("=");
-        if(index<0 && !c.startsWith("#")){
-            console.warn(`${c} is not a valid configuration`)
-        }else{
-            const tag = c.substring(0,index).trim();
-            const file = c.substring(index+1).trim();
-            if(PROPERTY_KEYS.indexOf(tag as any)>=0){
-                p[tag as typeof PROPERTY_KEYS[number]] = file;
+
+let mode : [string|undefined,string|undefined,string|undefined]=[undefined,undefined,undefined];
+
+["-c","-a","-i"].forEach((key,index)=>{
+    const ind = process.argv.indexOf(key);
+    if(ind>=0){
+        mode[index]=process.argv[ind+1];
+    }
+})
+const arr : (()=>Promise<void>)[] = [];
+if(mode[0]){
+    const props = mode[0];
+    arr.push(()=>new Promise<void>(res=>{
+        fs.readFile(props,{ encoding:"utf-8"}, (Err, data)=>{
+            if(Err){ console.log("no config file");return;}
+            
+            
+            if(Err)return console.error("unable to read configuration file");
+            const line = data.split("\n").map(e=>e.trim()).filter(c=>c.length);
+            const cmd  = line.reduce((p:CONFIG,c)=>{
+                const index = c.indexOf("=");
+                if(index<0 && !c.startsWith("#")){
+                    console.warn(`${c} is not a valid configuration`)
+                }else{
+                    const tag = c.substring(0,index).trim();
+                    const file = c.substring(index+1).trim();
+                    if(PROPERTY_KEYS.indexOf(tag as any)>=0){
+                        p[tag as typeof PROPERTY_KEYS[number]] = file;
+                        return p;
+                    }
+                    console.warn(`unknown tag <${tag}>`)
+                }
                 return p;
-            }
-            console.warn(`unknown tag <${tag}>`)
+            },{git:"", cwd:".", bg_task:undefined})
+            if(cmd.git.length===0)return console.error("git configuration is not defined in ",props);
+            const START = new Date().getTime();
+            console.log('processing',cmd.cwd)
+            
+            start(cmd).then(o=>{
+                console.clear();
+                console.log("Project folder created in ")
+                console.log(o);
+                console.log("Android project folder\n\t",path.join(o,"android"));
+                
+                if(process.platform==="darwin"){
+                    console.log("iOS project folder\n\t",path.join(o,"ios"));
+                }
+                console.log(`elapsed time ...  ${((new Date().getTime()-START)/1000).toFixed(1)}s`);
+                res();
+            });
+        });
+    }));
+}
+if(mode[1]){
+    const props = mode[1];
+    arr.push(()=>new Promise<void>(res=>{
+        
+        switch(os.platform()){
+            case "darwin":
+                return spawn("open",["-a","/Applications/Android Studio.app", path.join(props,"android")],{cwd:"."}).on("exit",()=>{
+                    res();
+                });
+            case "win32":
+                return spawn("start",["","c:\\Program Files\\Android\\Android Studio\\bin\\studio64.exe", path.join(props,"android")],{cwd:"."}).on("exit",()=>{
+                    res();
+                });
+            default:console.error("OS not supported");
+            res();
         }
-        return p;
-    },{git:"", cwd:".", bg_task:undefined})
-    if(cmd.git.length===0)return console.error("git configuration is not defined in ",props);
-    const START = new Date().getTime();
-    console.log('processing',cmd.cwd)
-    
-        start(cmd).then(o=>{
-        console.clear();
-        console.log("Project folder created in ")
-        console.log(o);
-        console.log("Android project folder\n\t",path.join(o,"android"));
-        if(process.platform==="darwin"){
-            console.log("iOS project folder\n\t",path.join(o,"ios"));
-        }
-        console.log(`elapsed time ...  ${((new Date().getTime()-START)/1000).toFixed(1)}s`);
-    
-    });
-    
-});
+        
+    }));
+}
+if(mode[2]){
+    const props = mode[2];
+    arr.push(()=>new Promise<void>(res=>{
+        spawn("open",["NativeTemplate.xcworkspace"],{cwd:path.join(props,"ios")}).on("exit",()=>{
+            res();
+        })
+    }));
+}
+sequence(...arr).then(()=>{
+    console.log("Completed on ",new Date())
+})
