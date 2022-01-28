@@ -106,11 +106,10 @@ function setIOS(mode:"icon"|"splash"){
 }
 
 
-export default function(iconDir:string, projectDir:string){
+export default function(iconDir:string){
     return new Promise<void>((res,rej)=>{
-        fs.readFile(path.join(projectDir,"config.json"),{encoding:"utf-8"},(err, data)=>{
+        fs.readFile(path.join("config.json"),{encoding:"utf-8"},(err, data)=>{
             if(err)return rej("ERROR no config");
-            console.log(data);
             const d=JSON.parse(data);
             if(!d?.bundleName?.main)return rej("invalid configuration");
             let name:string=d.bundleName.main;

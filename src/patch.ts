@@ -63,7 +63,7 @@ function start(config:CONFIG){
                 });
             }),
             ()=>chdir(root),
-            config.image?()=>imagePatch(config.image||"",root):()=>Promise.resolve(),
+            config.image?()=>imagePatch(config.image||""):()=>Promise.resolve(),
             ()=>chdir(root),
             ...Object.entries(modules).map(mod=>{
                 return ()=>command(WinCommand("npm"),".","install","--save",mod[1]===null?mod[0]: `${mod[0]}@${mod[1]}`)
