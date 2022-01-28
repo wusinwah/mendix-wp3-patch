@@ -62,7 +62,9 @@ function start(config:CONFIG){
                     res();
                 });
             }),
+            ()=>chdir(current),
             config.image?()=>imagePatch(config.image||""):()=>Promise.resolve(),
+            ()=>chdir(root),
             ...Object.entries(modules).map(mod=>{
                 return ()=>command(WinCommand("npm"),".","install","--save",mod[1]===null?mod[0]: `${mod[0]}@${mod[1]}`)
             }),
@@ -110,8 +112,9 @@ if(mode[0]){
             
             
             if(Err)return console.error("unable to read configuration file");
-            const line = data.split("\n").map(e=>e.trim()).filter(c=>c.length);
+            const line = data.split("\n").map(e=>e.trim()).filter(c=>c.length && !c.startsWith("#"));
             const cmd  = line.reduce((p:CONFIG,c)=>{
+                
                 const index = c.indexOf("=");
                 if(index<0 && !c.startsWith("#")){
                     console.warn(`${c} is not a valid configuration`)
