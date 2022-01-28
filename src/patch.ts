@@ -66,7 +66,7 @@ function start(config:CONFIG){
             ...Object.entries(modules).map(mod=>{
                 return ()=>command(WinCommand("npm"),".","install","--save",mod[1]===null?mod[0]: `${mod[0]}@${mod[1]}`)
             }),
-            ()=>command("npm",".","install","."),
+            ()=>command(WinCommand("npm"),".","install","."),
             ()=>chdir(path.join(root,"ios")),
             ()=>new Promise<void>(res=>fs.rename("nativeTemplate","native-template",()=>{res()})),
             ()=>chdir(path.join(root)),
