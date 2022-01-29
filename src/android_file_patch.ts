@@ -2,7 +2,7 @@ import fs from "fs"
 import { replaceAll } from "./utility";
 
 
-export default function updateGradle(ver:string){
+export default function updateGradle(){
     return new Promise<void>(res=>{
         fs.stat("./android/build.gradle.bkup",(err, stat)=>{
             new Promise<void>(res=>{
