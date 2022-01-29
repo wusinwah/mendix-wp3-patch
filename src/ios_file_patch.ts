@@ -3,19 +3,12 @@ import path from "path";
 import {replaceAll, sequence} from "./utility"
 import {parse, build} from "plist"
 
-export default function (version:string, bg_loc?:string, bg_task?:string):Promise<void>{
+export default function ( bg_loc?:string, bg_task?:string):Promise<void>{
     const current = process.cwd();
     const cmd = [
         ()=>mauron85_patch(current),
         ()=>info_plist(current,bg_loc||"Requesting to track location at the background", bg_task||"Requesting to allow background processing"),
-        ()=>new Promise<void>(Res=>{
-            fs.readFile("./ios/Bundle/index.ios.bundle",{encoding:"utf-8"},(err, txt)=>{
-                txt = replaceAll(txt, "###{NATIVE_APP_VERSION}###", version)
-                fs.writeFile("./ios/Bundle/index.ios.bundle",txt,()=>{
-                    Res();
-                });
-            });
-        })
+        
     ]
 
     return new Promise<void>(res=>{

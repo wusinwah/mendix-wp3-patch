@@ -19,7 +19,8 @@ interface CONFIG extends PROPERTY_SET  {
 
 const modules = {
     "@mauron85/react-native-background-geolocation":"0.6.3",
-    "react-native-tracking-transparency":"0.1.1"
+    "react-native-tracking-transparency":"0.1.1",
+    "react-native-version-number":"0.3.6"
 }
 
 
@@ -41,7 +42,6 @@ function start(config:CONFIG){
     const d = new Date();
     const root=path.resolve(path.join(_root,`source-${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`));
 
-    let version = "0.0.0";
     return new Promise<string>(Res=>{
         
         let cmd:(()=>Promise<void>)[] = [
@@ -49,20 +49,7 @@ function start(config:CONFIG){
             ()=>new Promise<void>(res=>fs.mkdir(root,{recursive:true},()=>res() )),
             ()=>command("git",".","clone",clone,root),
             ()=>chdir(path.join(root)),
-            ()=>new Promise<void>(res=>{
-                fs.readFile(path.join(root, "config.json"),{encoding:"utf-8"},(err, data2)=>{
-                    if(err){
-                        console.error("no config",err);process.exit(1);
-                    }
-                    const cfg : {
-                        "appVersion": string,
-                        "buildNumber": number,
-                    }=JSON.parse(data2);
-        
-                    version = `${cfg.appVersion}(${cfg.buildNumber})`;
-                    res();
-                });
-            }),
+            
             config.image?()=>imagePatch(config.image||""):()=>Promise.resolve(),
             ...Object.entries(modules).map(mod=>{
                 return ()=>command(WinCommand("npm"),".","install","--save",mod[1]===null?mod[0]: `${mod[0]}@${mod[1]}`)
@@ -80,11 +67,11 @@ function start(config:CONFIG){
             ()=>new Promise<void>(res=>fs.rename("native-template","nativeTemplate",()=>{res()})),
             ()=>command("pod",path.join(root,"ios"),"install"),
             ()=>chdir(path.join(root)),
-            ()=>patch(version,config.bg_loc, config.bg_task)
+            ()=>patch(config.bg_loc, config.bg_task)
         ]
         let remain = [
             ()=>chdir(path.join(root)),
-            ()=>updateGradle(version),
+            ()=>updateGradle(),
             ()=>chdir(current),
         ]
         sequence(...cmd,...ios,...remain).then(()=>{
