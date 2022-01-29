@@ -35,6 +35,7 @@ function start(config:CONFIG){
         p[c.substring(0,t).trim()]=c.substring(t+1);
         return p;
     },modules);
+    config.image = config.image?path.resolve(config.image):undefined;
     let _root:string = config.cwd, clone:string = config.git;
     const current = process.cwd();
     const d = new Date();
