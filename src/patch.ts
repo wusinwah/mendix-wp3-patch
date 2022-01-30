@@ -18,9 +18,9 @@ interface CONFIG extends PROPERTY_SET  {
 }
 
 const modules = {
-    /*"@mauron85/react-native-background-geolocation":"0.6.3",
+    "@mauron85/react-native-background-geolocation":"0.6.3",
     "react-native-tracking-transparency":"0.1.1",
-    "react-native-version-number":"0.3.6"*/
+    "react-native-version-number":"0.3.6"
 }
 
 
