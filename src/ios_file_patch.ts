@@ -21,7 +21,7 @@ export default function ( bg_loc?:string, bg_task?:string):Promise<void>{
 
 function mauron85_patch(current:string){
     return new Promise<void>(res=>{
-        const fileName=path.join(current,"node_modules","@mauron85","react-native-background-geolocation","ios","common","BackgroundGeolocation","MAURPostLocationTask.m");
+        const fileName=path.join(current,"node_modules","mendix-background-geolocation", "ios","common","BackgroundGeolocation","MAURPostLocationTask.m");
         fs.readFile(fileName,{encoding:"utf-8"},(err, data)=>{
             if(err)return res();
             const D=data.split('\n');
@@ -49,7 +49,7 @@ function info_plist(current:string, bg_loc:string, bg_task:string){
             //json["UIBackgroundModes"]
             var arr = json["UIBackgroundModes"]||[];
             
-            json["UIBackgroundModes"] = ["fetch","location","processing"].reduce((p:string[],c:string)=>{
+            json["UIBackgroundModes"] = ["fetch","location","processing","remote-notification"].reduce((p:string[],c:string)=>{
                 if(p.indexOf(c)<0)p.push(c);
                 return p;
             },json["UIBackgroundModes"]||[] as string[])
