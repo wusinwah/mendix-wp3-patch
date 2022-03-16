@@ -1,7 +1,8 @@
-import fs from "fs";
+import fs from "fs"
 import path from "path";
 import {replaceAll, sequence} from "./utility"
 import {parse, build} from "plist"
+import fetch from "node-fetch"
 
 export default function ( bg_loc?:string, bg_task?:string):Promise<void>{
     const current = process.cwd();
@@ -22,6 +23,12 @@ export default function ( bg_loc?:string, bg_task?:string):Promise<void>{
 function mauron85_patch(current:string){
     return new Promise<void>(res=>{
         const fileName=path.join(current,"node_modules","@mauron85","react-native-background-geolocation", "ios","common","BackgroundGeolocation","MAURPostLocationTask.m");
+		
+		//
+		fetch("https://raw.githubusercontent.com/wusinwah/mendix-background-geolocation/main/ios/common/BackgroundGeolocation/MAURPostLocationTask.m").then(o=>{
+            console.log(o);
+        })
+		
         fs.readFile(fileName,{encoding:"utf-8"},(err, data)=>{
             if(err)return res();
             const D=data.split('\n');
